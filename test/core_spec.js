@@ -117,6 +117,19 @@ describe('application logic', () => {
             }));
         });
 
+        it('should not allow to vote the not included pair', () => {
+            const state = fromJS({
+                pair: ['ilya', 'libin'],
+                tally: {
+                    ilya: 3,
+                    libin: 4
+                }
+            });
+
+            const nextState = vote(state, 'alex');
+            expect(nextState).to.equal(state);
+        });
+
         it('adds score to the existing tally', () => {
             const state = Map({
                 pair: List.of('Ilya', 'Libin'),
