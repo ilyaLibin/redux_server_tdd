@@ -37,54 +37,105 @@ describe('application logic', () => {
                 entries: ['alexandrovich']
             }));
         });
+
+        it('moves the winner back to the entries stack', () => {
+            const state = fromJS({
+                vote: {
+                    pair: ['ilya', 'libin'],
+                    tally: {
+                        'ilya': 4,
+                        'libin': 2
+                    },
+                },
+                entries: ['alexandrovich', 'shnizel', 'kartoshka']
+            });
+
+            const nextState = next(state);
+
+            expect(nextState).to.equal(fromJS({
+                vote: {
+                    pair: ['alexandrovich', 'shnizel']
+                },
+                entries: ['kartoshka', 'ilya']
+            }));
+        });
+
+        it('puts back from tire back to entries', () => {
+            const state = fromJS({
+                vote: {
+                    pair: ['ilya', 'libin'],
+                    tally: {
+                        'ilya': 3,
+                        'libin': 3
+                    }
+                },
+                entries: ['alexandrovich', 'shnizel', 'kartoshka']
+            });
+
+            const nextState = next(state);
+
+            expect(nextState).to.equal(fromJS({
+                vote: {
+                    pair: ['alexandrovich', 'shnizel']
+                },
+                entries: ['kartoshka', 'ilya', 'libin']
+            }));
+        });
+
+        it('marks winner when just one entry left', () => {
+            const state = fromJS({
+                vote: {
+                    pair: ['ilya', 'libin'],
+                    tally: {
+                        'ilya': 4,
+                        'libin': 2
+                    }
+                },
+                entries: []
+            });
+
+            const nextState = next(state);
+
+            expect(nextState).to.equal(fromJS({
+                winner: 'ilya'
+            }));
+        });
     });
 
     describe('vote', () => {
-        it('creates a tally for the movie', () => {
+        it('creates a tally for the voted entry', () => {
             const state = Map({
-                vote: Map({
-                    pair: List.of('Ilya', 'Libin')
-                }),
-                entries: List()
+                pair: List.of('Ilya', 'Libin')
             })
 
             const nextState = vote(state, 'Ilya');
             expect(nextState).to.equal(Map({
-                vote: Map({
-                    pair: List.of('Ilya', 'Libin'),
-                    tally: Map({
-                        'Ilya': 1
-                    })
-                }),
-                entries: List()
+                pair: List.of('Ilya', 'Libin'),
+                tally: Map({
+                    'Ilya': 1
+                })
             }));
         });
 
-        it('ads score to the existing tally', () => {
+        it('adds score to the existing tally', () => {
             const state = Map({
-                vote: Map({
-                    pair: List.of('Ilya', 'Libin'),
-                    tally: Map({
-                        'Ilya': 3,
-                        'Libin': 4
-                    }),
-                    entries: List()
+                pair: List.of('Ilya', 'Libin'),
+                tally: Map({
+                    'Ilya': 3,
+                    'Libin': 2
                 })
             });
 
             const nextState = vote(state, 'Ilya');
             expect(nextState).to.equal(Map({
-                vote: Map({
-                    pair: List.of('Ilya', 'Libin'),
-                    tally: Map({
-                        'Ilya': 4,
-                        'Libin': 4
-                    }),
-                    entries: List() 
+                pair: List.of('Ilya', 'Libin'),
+                tally: Map({
+                    'Ilya': 4,
+                    'Libin': 2
                 })
             }));
         });
-    })
+    });
 });
 
 
